@@ -1,8 +1,29 @@
 import torch
 import random
 import pandas as pd
-from torch.utils.data import Sampler
+from torch.utils.data import Sampler, Dataset
 import torchaudio
+from torchaudio import transforms
+
+
+class CommonVoice(Dataset):
+    def __init__(self, csv_path) -> None:
+        super().__init__()
+        self.data = pd.read_csv(csv_path)
+        self.resampler = transforms.Resample(orig_freq=48000, new_freq=16000)
+        self.speakers = list(self.data.speaker_id.unique())
+        self.speakers_to_labels = {v: k for k, v in enumerate(self.speakers)}
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        sample = self.data.iloc[index]
+        _, waveform = torchaudio.load(sample["audio_path"])
+        resampled_audio = self.resampler(waveform)
+        return resampled_audio, torch.tensor(
+            self.speakers_to_labels[sample["speaker_id"]]
+        )
 
 
 class TaskSampler(Sampler):
