@@ -4,6 +4,7 @@ import pandas as pd
 from torch.utils.data import Sampler, Dataset
 import torchaudio
 from torchaudio import transforms
+from typing import Optional, Sized, Tuple, List
 
 
 class CommonVoice(Dataset):
@@ -27,42 +28,58 @@ class CommonVoice(Dataset):
 
 
 class TaskSampler(Sampler):
-    def __init__(self, csv_file, n_ways, n_shot, n_query):
-        super().__init__(data_source=None)
+    def __init__(
+        self,
+        n_ways: int,
+        n_shot: int,
+        n_query: int,
+        csv_path: str,
+        n_tasks: int,
+        data_source: Optional[Sized] = None,
+    ) -> None:
+        super().__init__(data_source)
         self.n_ways = n_ways
         self.n_shot = n_shot
         self.n_query = n_query
-
-        self.df = pd.read_csv(csv_file)
-        labels = self.df.speaker_id.unique()
-        self.labels = {k: v for v, k in enumerate(labels)}
-        self.items_to_labels = {}
-        for i in range(len(self.df)):
-            if self.df.speaker_id[i] not in self.items_to_labels:
-                self.items_to_labels[self.labels[self.df.speaker_id[i]]] = [i]
-
+        self.n_tasks = n_tasks
+        self.data = pd.read_csv(csv_path)
+        self.speaker_id = list(self.data.speaker_id.unique())
+        self.speaker_to_item = {}
+        for i, row in self.data.iterrows():
+            if row["speaker_id"] not in self.speaker_to_item:
+                self.speaker_to_item[row["speaker_id"]] = [i]
             else:
-                self.items_to_labels[self.labels[self.df.speaker_id[i]]].append(i)
+                self.speaker_to_item[row["speaker_id"]].append(i)
 
     def __len__(self):
-        return len(self.df)
+        return len(self.data)
 
     def __iter__(self):
-        yield torch.cat([
-            torch.tensor(
-                random.sample(
-                    list(self.items_to_labels[label]), self.n_shot + self.n_query
+        for _ in range(self.n_tasks):
+            yield torch.cat([
+                torch.tensor(
+                    random.sample(
+                        self.speaker_to_item[speaker], self.n_shot + self.n_query
+                    )
                 )
-            )
-            for label in random.sample(list(self.labels.values()), self.n_ways)
-        ])
+                for speaker in random.sample(self.speaker_id, self.n_ways)
+            ])
 
-    def collate_fn(self, input_data):
-        speaker_path = self.arrange_data(input_data)
-        true_class_id = list([x[0] for x in speaker_path])
-        all_paths = torch.cat()
+    def collate_fn(self, inputs: List[Tuple[torch.Tensor, torch.Tensor]]):
+        data = self.type_cast(inputs)
+        true_class_ids = list({i[1] for i in data})
+        samples = torch.cat([i[0].unsqueeze(0) for i in data]).reshape(
+            self.n_ways, self.n_shot + self.n_query, *some_shape
+        )
+        labels = torch.cat([
+            torch.tensor(true_class_ids.index(i[1])) for i in data
+        ]).reshape(self.n_ways, self.n_shot + self.n_query)
+        support_samples = samples[:, : self.n_shot].reshape((-1, *some_shape))
+        query_samples = samples[:, self.n_shot].reshape((-1, *some_shape))
+        support_labels = labels[:, : self.n_shot].flatten()
+        query_labels = labels[:, self.n_shot :].flatten()
 
-    def arrange_data(self, input_data):
-        return [
-            (item["client_id"][0], item["audio"]["array"]) for item in input_data.keys()
-        ]
+        return support_samples, support_labels, query_samples, query_labels
+
+    def type_cast(self, inputs: List[Tuple[torch.Tensor, torch.Tensor]]):
+        return [(image, int(label)) for (image, label) in inputs]
