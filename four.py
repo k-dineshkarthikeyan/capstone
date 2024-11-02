@@ -12,10 +12,14 @@ print("downloaded dataset")
 
 async def write_csv(split):
     dl = DataLoader(dataset[split])
-    df = pd.DataFrame(data={"speaker_id": [], "audio_path": []})
+    df = pd.DataFrame(data={"speaker_id": [], "audio_path": [], "tensor_shape": []})
 
     for batch in dl:
-        df.loc[len(df)] = [batch["client_id"][0], batch["path"][0]]
+        df.loc[len(df)] = [
+            batch["client_id"][0],
+            batch["path"][0],
+            batch["audio"]["array"].shape,
+        ]
 
     df.to_csv(f"{split}.csv", index=False)
 
