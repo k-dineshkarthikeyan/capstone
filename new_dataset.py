@@ -44,10 +44,9 @@ class CommonVoice(Dataset):
     def load_audio(self, index: int) -> torch.Tensor:
         audio_path = self.data.audio_path[index]
         waveform, sample_rate = torchaudio.load(audio_path)
-        resampler = torchaudio.transforms.Resample(
-            orig_freq=sample_rate, new_freq=self.bundle_freq_rate
+        waveform = torchaudio.functional.resample(
+            waveform, orig_freq=sample_rate, new_freq=self.bundle_freq_rate
         )
-        waveform = resampler(waveform)
         waveform = waveform[: self.audio_len]
         return waveform
 
