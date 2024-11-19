@@ -43,6 +43,8 @@ class TaskSampler(Sampler):
         self.n_query = n_query
         self.n_tasks = n_tasks
         self.data = pd.read_csv(csv_path)
+        min_len = self.data.resampled_shapes.min()
+        self.some_shape = [1, min_len]
         self.speaker_id = list(self.data.speaker_id.unique())
         self.speaker_to_item = {}
         for i, row in self.data.iterrows():
@@ -69,13 +71,13 @@ class TaskSampler(Sampler):
         data = self.type_cast(inputs)
         true_class_ids = list({i[1] for i in data})
         samples = torch.cat([i[0].unsqueeze(0) for i in data]).reshape(
-            self.n_ways, self.n_shot + self.n_query, *some_shape
+            self.n_ways, self.n_shot + self.n_query, *self.some_shape
         )
         labels = torch.cat([
             torch.tensor(true_class_ids.index(i[1])) for i in data
         ]).reshape(self.n_ways, self.n_shot + self.n_query)
-        support_samples = samples[:, : self.n_shot].reshape((-1, *some_shape))
-        query_samples = samples[:, self.n_shot].reshape((-1, *some_shape))
+        support_samples = samples[:, : self.n_shot].reshape((-1, *self.some_shape))
+        query_samples = samples[:, self.n_shot].reshape((-1, *self.some_shape))
         support_labels = labels[:, : self.n_shot].flatten()
         query_labels = labels[:, self.n_shot :].flatten()
 
