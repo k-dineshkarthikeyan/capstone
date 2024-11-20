@@ -9,7 +9,7 @@ class Model(nn.Module):
         bundle = torchaudio.pipelines.WAV2VEC2_XLSR53
         self.model = bundle.get_model()
         self.bundle_sample_rate = bundle.sample_rate
-        self.w = nn.Parameter(torch.tensor([1]))
+        self.w = nn.Parameter(torch.tensor([1.0]))
 
     def first_half(self, support_tensors, query_tensors, labels):
         avgpool = nn.AdaptiveMaxPool1d((1))
