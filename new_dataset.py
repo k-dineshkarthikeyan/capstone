@@ -27,7 +27,7 @@ class CommonVoice(Dataset):
         #         self.speaker_indices[row[0]] = [index]
         #     else:
         #         self.speaker_indices[row[0]].append(index)
-        for index, speaker in self.data.speaker_id:
+        for index, speaker in enumerate(self.data.speaker_id):
             if speaker not in self.speaker_sample_len:
                 self.speaker_sample_len[speaker] = 1
             else:
