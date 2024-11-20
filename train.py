@@ -38,6 +38,7 @@ loss_fn = nn.CrossEntropyLoss()
 
 for epoch in range(epochs):
     model.train()
+    print(f"Epoch: {epoch}")
     for id, (support_samples, support_labels, query_samples, query_labels) in tqdm(
         enumerate(train_dl), desc="Training..."
     ):
