@@ -12,7 +12,7 @@ class Model(nn.Module):
         self.w = nn.Parameter(torch.tensor([1.0]))
 
     def first_half(self, support_tensors, query_tensors, labels):
-        avgpool = nn.AdaptiveMaxPool1d((1))
+        avgpool = nn.AdaptiveAvgPool1d((1))
         out = avgpool(support_tensors)
         support = out.view((out.size(0), -1))
 
