@@ -1,0 +1,6 @@
+datasets
+soundfile
+librosa
+asyncjson
+aiofiles
+pandas
