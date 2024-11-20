@@ -56,7 +56,7 @@ class CommonVoice(Dataset):
         waveform = torchaudio.functional.resample(
             waveform, orig_freq=sample_rate, new_freq=self.bundle_freq_rate
         )
-        waveform = waveform[: self.audio_len]
+        waveform = waveform[:, : self.audio_len]
         return waveform
 
     def __getitem__(self, _):
