@@ -17,17 +17,26 @@ class CommonVoice(Dataset):
         self.random_sample = torch.randn(1, self.audio_len)
         self.speaker_sample_len = {}
         self.speaker_indices = {}
-        for index, row in self.data.iterrows():
-            if row[0] not in self.speaker_sample_len:
-                self.speaker_sample_len[row[0]] = 1
-            else:
-                self.speaker_sample_len[row[0]] += 1
+        # for index, row in self.data.iterrows():
+        #     if row[0] not in self.speaker_sample_len:
+        #         self.speaker_sample_len[row[0]] = 1
+        #     else:
+        #         self.speaker_sample_len[row[0]] += 1
 
-            if row[0] not in self.speaker_indices:
-                self.speaker_indices[row[0]] = [index]
+        #     if row[0] not in self.speaker_indices:
+        #         self.speaker_indices[row[0]] = [index]
+        #     else:
+        #         self.speaker_indices[row[0]].append(index)
+        for index, speaker in self.data.speaker_id:
+            if speaker not in self.speaker_sample_len:
+                self.speaker_sample_len[speaker] = 1
             else:
-                self.speaker_indices[row[0]].append(index)
-        self.unique_speakers = self.data.speaker_id.unique()
+                self.speaker_sample_len[speaker] += 1
+            if speaker not in self.speaker_indices:
+                self.speaker_indices[speaker] = [index]
+            else:
+                self.speaker_indices[speaker].append(index)
+        self.unique_speakers = self.data.speaker_id.unique().tolist()
         self.speakers_to_labels = {
             k: v for v, k in enumerate(list(self.unique_speakers))
         }
