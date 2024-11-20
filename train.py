@@ -31,6 +31,7 @@ val_dl = DataLoader(val_ds, num_workers=12, pin_memory=True)
 device = "cuda" if torch.cuda.is_available else "cpu"
 model = Model()
 model.to(device)
+torch.save(model.state_dict(), os.path.join(save_location, "dummy.pth"))
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_fn = nn.CrossEntropyLoss()
 
