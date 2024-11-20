@@ -40,7 +40,7 @@ for epoch in range(epochs):
     model.train()
     print(f"Epoch: {epoch}")
     for id, (support_samples, support_labels, query_samples, query_labels) in tqdm(
-        enumerate(train_dl), desc="Training..."
+        enumerate(train_dl), desc="Training...", total=len(train_dl)
     ):
         support_samples, support_labels, query_samples, query_labels = (
             support_samples.squeeze(0).to(device),
@@ -65,7 +65,7 @@ for epoch in range(epochs):
             support_labels,
             query_samples,
             query_labels,
-        ) in tqdm(enumerate(val_dl), desc="Validating..."):
+        ) in tqdm(enumerate(val_dl), desc="Validating...", total=len(val_dl)):
             support_samples, support_labels, query_samples, query_labels = (
                 support_samples.squeeze(0).to(device),
                 support_labels.squeeze(0).to(device),
