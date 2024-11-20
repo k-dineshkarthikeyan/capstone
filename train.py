@@ -45,10 +45,8 @@ for epoch in range(epochs):
             query_samples.squeeze(0).to(device),
             query_labels.squeeze(0).to(device),
         )
-        print("support_samples", support_samples.shape)
-        print("query_samples", query_samples.shape)
         optimizer.zero_grad()
-        output = model(support_samples, query_samples, support_labels)
+        output = model(support_samples, support_labels, query_samples)
         loss = loss_fn(output, query_labels)
         loss.backward()
         optimizer.step()
@@ -75,7 +73,11 @@ for epoch in range(epochs):
             correct = (
                 (
                     torch.max(
-                        model(support_samples, query_samples, support_labels)
+                        model(
+                            support_samples,
+                            support_labels,
+                            query_samples,
+                        )
                         .detach()
                         .data,
                         1,
