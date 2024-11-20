@@ -40,12 +40,21 @@ class CommonVoice(Dataset):
         self.speakers_to_labels = {
             k: v for v, k in enumerate(list(self.unique_speakers))
         }
+        blacklist_speakers = []
         for key in self.unique_speakers:
             if len(self.speaker_indices[key]) < self.n_shot + self.n_query:
-                del self.speaker_indices[key]
-                del self.speaker_sample_len[key]
-                del self.speakers_to_labels[key]
-                self.unique_speakers.remove(key)
+                blacklist_speakers.append(key)
+                # del self.speaker_indices[key]
+                # del self.speaker_sample_len[key]
+                # del self.speakers_to_labels[key]
+                # self.unique_speakers.remove(key)
+
+        self.speaker_indices = {
+            k: v for k, v in self.speaker_indices if k not in blacklist_speakers
+        }
+        self.unique_speakers = [
+            i for i in self.unique_speakers if i not in blacklist_speakers
+        ]
 
     def __len__(self) -> int:
         return len(self.data)
