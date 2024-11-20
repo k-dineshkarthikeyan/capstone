@@ -50,7 +50,7 @@ class CommonVoice(Dataset):
                 # self.unique_speakers.remove(key)
 
         self.speaker_indices = {
-            k: v for k, v in self.speaker_indices if k not in blacklist_speakers
+            k: v for k, v in self.speaker_indices.items() if k not in blacklist_speakers
         }
         self.unique_speakers = [
             i for i in self.unique_speakers if i not in blacklist_speakers
