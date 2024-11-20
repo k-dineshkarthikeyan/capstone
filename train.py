@@ -45,6 +45,8 @@ for epoch in range(epochs):
             query_samples.squeeze(0).to(device),
             query_labels.squeeze(0).to(device),
         )
+        print("support_samples", support_samples.shape)
+        print("query_samples", query_samples.shape)
         optimizer.zero_grad()
         output = model(support_samples, query_samples, support_labels)
         loss = loss_fn(output, query_labels)
@@ -69,8 +71,6 @@ for epoch in range(epochs):
                 query_samples.squeeze(0).to(device),
                 query_labels.squeeze(0).to(device),
             )
-            print("support_samples", support_samples.shape)
-            print("query_samples", query_samples.shape)
 
             correct = (
                 (
