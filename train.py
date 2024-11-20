@@ -5,6 +5,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 import torchaudio
 import os
+from tqdm import tqdm
 
 epochs = 100
 lr = 0.0001
@@ -37,8 +38,8 @@ loss_fn = nn.CrossEntropyLoss()
 
 for epoch in range(epochs):
     model.train()
-    for id, (support_samples, support_labels, query_samples, query_labels) in enumerate(
-        train_dl
+    for id, (support_samples, support_labels, query_samples, query_labels) in tqdm(
+        enumerate(train_dl), desc="Training..."
     ):
         support_samples, support_labels, query_samples, query_labels = (
             support_samples.squeeze(0).to(device),
@@ -63,7 +64,7 @@ for epoch in range(epochs):
             support_labels,
             query_samples,
             query_labels,
-        ) in enumerate(val_dl):
+        ) in tqdm(enumerate(val_dl), desc="Validating..."):
             support_samples, support_labels, query_samples, query_labels = (
                 support_samples.squeeze(0).to(device),
                 support_labels.squeeze(0).to(device),
