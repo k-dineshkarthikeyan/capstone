@@ -17,16 +17,6 @@ class CommonVoice(Dataset):
         self.random_sample = torch.randn(1, self.audio_len)
         self.speaker_sample_len = {}
         self.speaker_indices = {}
-        # for index, row in self.data.iterrows():
-        #     if row[0] not in self.speaker_sample_len:
-        #         self.speaker_sample_len[row[0]] = 1
-        #     else:
-        #         self.speaker_sample_len[row[0]] += 1
-
-        #     if row[0] not in self.speaker_indices:
-        #         self.speaker_indices[row[0]] = [index]
-        #     else:
-        #         self.speaker_indices[row[0]].append(index)
         for index, speaker in enumerate(self.data.speaker_id):
             if speaker not in self.speaker_sample_len:
                 self.speaker_sample_len[speaker] = 1
@@ -44,10 +34,6 @@ class CommonVoice(Dataset):
         for key in self.unique_speakers:
             if len(self.speaker_indices[key]) < self.n_shot + self.n_query:
                 blacklist_speakers.append(key)
-                # del self.speaker_indices[key]
-                # del self.speaker_sample_len[key]
-                # del self.speakers_to_labels[key]
-                # self.unique_speakers.remove(key)
 
         self.speaker_indices = {
             k: v for k, v in self.speaker_indices.items() if k not in blacklist_speakers
