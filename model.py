@@ -28,6 +28,8 @@ class Model(nn.Module):
         return dists
 
     def forward(self, support_samples, support_labels, query_samples):
+        l = [i.shape for i in support_samples]
+        print(l)
         support = torch.cat([self.model(sample)[0] for sample in support_samples])
         query = torch.cat([self.model(sample)[0] for sample in query_samples])
 
