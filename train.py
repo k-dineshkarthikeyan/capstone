@@ -69,6 +69,8 @@ for epoch in range(epochs):
                 query_samples.squeeze(0).to(device),
                 query_labels.squeeze(0).to(device),
             )
+            print("support_samples", support_samples.shape)
+            print("query_samples", query_samples.shape)
 
             correct = (
                 (
