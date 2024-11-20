@@ -14,7 +14,7 @@ val_csv = "./val.csv"
 n_shot = 5
 n_ways = 1
 n_query = 1
-show_every = 500
+show_every = 50000
 save_location = "./checkpoints"
 
 bundle = torchaudio.pipelines.WAV2VEC2_XLSR53
