@@ -40,10 +40,10 @@ for epoch in range(epochs):
         train_dl
     ):
         support_samples, support_labels, query_samples, query_labels = (
-            support_samples.to(device),
-            support_labels.to(device),
-            query_samples.to(device),
-            query_labels.to(device),
+            support_samples.squeeze(0).to(device),
+            support_labels.squeeze(0).to(device),
+            query_samples.squeeze(0).to(device),
+            query_labels.squeeze(0).to(device),
         )
         optimizer.zero_grad()
         output = model(support_samples, query_samples, support_labels)
@@ -64,10 +64,10 @@ for epoch in range(epochs):
             query_labels,
         ) in enumerate(val_dl):
             support_samples, support_labels, query_samples, query_labels = (
-                support_samples.to(device),
-                support_labels.to(device),
-                query_samples.to(device),
-                query_labels.to(device),
+                support_samples.squeeze(0).to(device),
+                support_labels.squeeze(0).to(device),
+                query_samples.squeeze(0).to(device),
+                query_labels.squeeze(0).to(device),
             )
 
             correct = (
