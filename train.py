@@ -32,14 +32,14 @@ task_sampler_val = TaskSampler(n_ways, n_shot, n_query, val_csv, 100)
 
 train_dl = DataLoader(
     train_ds,
-    num_workers=12,
+    num_workers=24,
     pin_memory=True,
     batch_sampler=task_sampler_train,
     collate_fn=task_sampler_train.collate_fn,
 )
 val_dl = DataLoader(
     val_ds,
-    num_workers=12,
+    num_workers=24,
     pin_memory=True,
     batch_sampler=task_sampler_val,
     collate_fn=task_sampler_val.collate_fn,
