@@ -84,7 +84,7 @@ class TaskSampler(Sampler):
         samples = torch.cat([i[0].unsqueeze(0) for i in data]).reshape(
             self.n_ways, self.n_shot + self.n_query, *self.some_shape
         )
-        labels = torch.cat([
+        labels = torch.tensor([
             torch.tensor(true_class_ids.index(i[1])) for i in data
         ]).reshape(self.n_ways, self.n_shot + self.n_query)
         support_samples = samples[:, : self.n_shot].reshape((-1, *self.some_shape))
