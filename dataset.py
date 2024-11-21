@@ -10,6 +10,7 @@ from typing import Optional, Sized, Tuple, List
 class CommonVoice(Dataset):
     def __init__(self, csv_path) -> None:
         super().__init__()
+        self.csv_name = csv_path
         self.data = pd.read_csv(csv_path)
         self.audio_len = self.data.resampled_shapes.min()
         self.resampler = transforms.Resample(orig_freq=48000, new_freq=16000)
@@ -17,6 +18,8 @@ class CommonVoice(Dataset):
         self.speakers_to_labels = {v: k for k, v in enumerate(self.speakers)}
 
     def __len__(self):
+        if "train" in self.csv_name:
+            return len(self.data) // 10
         return len(self.data)
 
     def __getitem__(self, index):
@@ -40,6 +43,7 @@ class TaskSampler(Sampler):
         data_source: Optional[Sized] = None,
     ) -> None:
         super().__init__(data_source)
+        self.csv_name = csv_path
         self.n_ways = n_ways
         self.n_shot = n_shot
         self.n_query = n_query
@@ -65,6 +69,8 @@ class TaskSampler(Sampler):
         }
 
     def __len__(self):
+        if "train" in self.csv_name:
+            return len(self.data) // 10
         return len(self.data)
 
     def __iter__(self):
