@@ -8,6 +8,7 @@ import pandas as pd
 class CommonVoice(Dataset):
     def __init__(self, csv_path, n_shot, n_ways, n_query, bundle_freq_rate) -> None:
         super().__init__()
+        self.csv_name = csv_path
         self.bundle_freq_rate = bundle_freq_rate
         self.data = pd.read_csv(csv_path)
         self.n_shot = n_shot
@@ -43,6 +44,8 @@ class CommonVoice(Dataset):
         ]
 
     def __len__(self) -> int:
+        if "train" in self.csv_name:
+            return len(self.data) // 5
         return len(self.data)
 
     def load_audio(self, index: int) -> torch.Tensor:
