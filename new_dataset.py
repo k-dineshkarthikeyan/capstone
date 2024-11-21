@@ -45,7 +45,7 @@ class CommonVoice(Dataset):
 
     def __len__(self) -> int:
         if "train" in self.csv_name:
-            return len(self.data) // 5
+            return len(self.data) // 10
         return len(self.data)
 
     def load_audio(self, index: int) -> torch.Tensor:
