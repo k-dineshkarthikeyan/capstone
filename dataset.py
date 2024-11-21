@@ -13,7 +13,7 @@ class CommonVoice(Dataset):
         self.data = pd.read_csv(csv_path)
         self.audio_len = self.data.resampled_shapes.min()
         self.resampler = transforms.Resample(orig_freq=48000, new_freq=16000)
-        self.speakers = list(self.data.speaker_id.unique())
+        self.speakers = self.data.speaker_id.unique().tolist()
         self.speakers_to_labels = {v: k for k, v in enumerate(self.speakers)}
 
     def __len__(self):
@@ -47,13 +47,22 @@ class TaskSampler(Sampler):
         self.data = pd.read_csv(csv_path)
         min_len = self.data.resampled_shapes.min()
         self.some_shape = [1, min_len]
-        self.speaker_id = list(self.data.speaker_id.unique())
+        self.speaker_id = self.data.speaker_id.unique().tolist()
         self.speaker_to_item = {}
         for i, row in self.data.iterrows():
             if row["speaker_id"] not in self.speaker_to_item:
                 self.speaker_to_item[row["speaker_id"]] = [i]
             else:
                 self.speaker_to_item[row["speaker_id"]].append(i)
+        exclude_speakers = []
+        for i in self.speaker_to_item:
+            if len(self.speaker_to_item[i]) < self.n_shot + self.n_query:
+                exclude_speakers.append(i)
+
+        self.speaker_id = [i for i in self.speaker_id if i not in exclude_speakers]
+        self.speaker_to_item = {
+            k: v for k, v in self.speaker_to_item.items() if k not in exclude_speakers
+        }
 
     def __len__(self):
         return len(self.data)
