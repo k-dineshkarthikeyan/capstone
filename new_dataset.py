@@ -43,7 +43,7 @@ class CommonVoice(Dataset):
         ]
 
     def __len__(self) -> int:
-        return len(self.data) // 8
+        return len(self.data)
 
     def load_audio(self, index: int) -> torch.Tensor:
         audio_path = self.data.audio_path[index]
