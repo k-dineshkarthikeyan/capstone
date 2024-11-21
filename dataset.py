@@ -21,7 +21,7 @@ class CommonVoice(Dataset):
 
     def __getitem__(self, index):
         sample = self.data.iloc[index]
-        _, waveform = torchaudio.load(sample["audio_path"])
+        waveform, _ = torchaudio.load(sample["audio_path"])
         resampled_audio = self.resampler(waveform)
         resampled_audio = resampled_audio[:, : int(self.audio_len)]
         return resampled_audio, torch.tensor(
