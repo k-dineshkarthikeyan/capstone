@@ -13,7 +13,8 @@ class CommonVoice(Dataset):
         self.csv_name = csv_path
         self.data = pd.read_csv(csv_path)
         self.audio_len = self.data.resampled_shapes.min()
-        self.resampler = transforms.Resample(orig_freq=48000, new_freq=16000)
+        self.target_rate = torchaudio.pipelines.WAV2VEC2_XLSR53.sample_rate
+        # self.resampler = transforms.Resample(orig_freq=48000, new_freq=16000)
         self.speakers = self.data.speaker_id.unique().tolist()
         self.speakers_to_labels = {v: k for k, v in enumerate(self.speakers)}
 
@@ -24,8 +25,11 @@ class CommonVoice(Dataset):
 
     def __getitem__(self, index):
         sample = self.data.iloc[index]
-        waveform, _ = torchaudio.load(sample["audio_path"])
-        resampled_audio = self.resampler(waveform)
+        waveform, sample_rate = torchaudio.load(sample["audio_path"])
+        # resampled_audio = self.resampler(waveform)
+        resampled_audio = torchaudio.functional.resample(
+            waveform=waveform, orig_freq=sample_rate, new_freq=self.target_rate
+        )
         resampled_audio = resampled_audio[:, : int(self.audio_len)]
         return resampled_audio, torch.tensor(
             self.speakers_to_labels[sample["speaker_id"]]
