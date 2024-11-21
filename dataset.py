@@ -76,7 +76,7 @@ class TaskSampler(Sampler):
                     )
                 )
                 for speaker in random.sample(self.speaker_id, self.n_ways)
-            ])
+            ]).tolist()
 
     def collate_fn(self, inputs: List[Tuple[torch.Tensor, torch.Tensor]]):
         data = self.type_cast(inputs)
