@@ -1,5 +1,7 @@
 import torch
-from dataset import CommonVoice, TaskSampler
+
+# from dataset import CommonVoice, TaskSampler
+from new_dataset import CommonVoice
 from model import Model
 from torch import nn, optim
 from torch.utils.data import DataLoader
@@ -19,30 +21,30 @@ save_location = "./checkpoints"
 
 bundle = torchaudio.pipelines.WAV2VEC2_XLSR53
 freq = bundle.sample_rate
-# train_ds = CommonVoice(
-#     train_csv, n_shot=n_shot, n_ways=n_ways, n_query=n_query, bundle_freq_rate=freq
-# )
-train_ds = CommonVoice(train_csv)
-task_sampler_train = TaskSampler(n_ways, n_shot, n_query, train_csv, 360)
-# val_ds = CommonVoice(
-#     val_csv, n_shot=n_shot, n_ways=n_ways, n_query=n_query, bundle_freq_rate=freq
-# )
-val_ds = CommonVoice(val_csv)
-task_sampler_val = TaskSampler(n_ways, n_shot, n_query, val_csv, 100)
+train_ds = CommonVoice(
+    train_csv, n_shot=n_shot, n_ways=n_ways, n_query=n_query, bundle_freq_rate=freq
+)
+# train_ds = CommonVoice(train_csv)
+# task_sampler_train = TaskSampler(n_ways, n_shot, n_query, train_csv, 360)
+val_ds = CommonVoice(
+    val_csv, n_shot=n_shot, n_ways=n_ways, n_query=n_query, bundle_freq_rate=freq
+)
+# val_ds = CommonVoice(val_csv)
+# task_sampler_val = TaskSampler(n_ways, n_shot, n_query, val_csv, 100)
 
 train_dl = DataLoader(
     train_ds,
     num_workers=24,
     pin_memory=True,
-    batch_sampler=task_sampler_train,
-    collate_fn=task_sampler_train.collate_fn,
+    # batch_sampler=task_sampler_train,
+    # collate_fn=task_sampler_train.collate_fn,
 )
 val_dl = DataLoader(
     val_ds,
     num_workers=24,
     pin_memory=True,
-    batch_sampler=task_sampler_val,
-    collate_fn=task_sampler_val.collate_fn,
+    # batch_sampler=task_sampler_val,
+    # collate_fn=task_sampler_val.collate_fn,
 )
 
 device = "cuda" if torch.cuda.is_available else "cpu"
