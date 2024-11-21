@@ -58,11 +58,17 @@ for epoch in range(epochs):
     for id, (support_samples, support_labels, query_samples, query_labels) in tqdm(
         enumerate(train_dl), desc="Training...", total=len(train_dl)
     ):
+        # support_samples, support_labels, query_samples, query_labels = (
+        #     support_samples.squeeze(0).to(device),
+        #     support_labels.squeeze(0).to(device),
+        #     query_samples.squeeze(0).to(device),
+        #     query_labels.squeeze(0).to(device),
+        # )
         support_samples, support_labels, query_samples, query_labels = (
-            support_samples.squeeze(0).to(device),
-            support_labels.squeeze(0).to(device),
-            query_samples.squeeze(0).to(device),
-            query_labels.squeeze(0).to(device),
+            support_samples.to(device),
+            support_labels.to(device),
+            query_samples.to(device),
+            query_labels.to(device),
         )
         optimizer.zero_grad()
         output = model(support_samples, support_labels, query_samples)
@@ -82,11 +88,17 @@ for epoch in range(epochs):
             query_samples,
             query_labels,
         ) in tqdm(enumerate(val_dl), desc="Validating...", total=len(val_dl)):
+            # support_samples, support_labels, query_samples, query_labels = (
+            #     support_samples.squeeze(0).to(device),
+            #     support_labels.squeeze(0).to(device),
+            #     query_samples.squeeze(0).to(device),
+            #     query_labels.squeeze(0).to(device),
+            # )
             support_samples, support_labels, query_samples, query_labels = (
-                support_samples.squeeze(0).to(device),
-                support_labels.squeeze(0).to(device),
-                query_samples.squeeze(0).to(device),
-                query_labels.squeeze(0).to(device),
+                support_samples.to(device),
+                support_labels.to(device),
+                query_samples.to(device),
+                query_labels.to(device),
             )
 
             correct = (
